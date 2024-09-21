@@ -1,4 +1,4 @@
-# Cog-FLUX
+# Cog-FLUX-Schnell
 
 This is an implementation of a Cog model. [Cog packages machine learning models as standard containers.](https://github.com/replicate/cog)
 
