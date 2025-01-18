@@ -96,7 +96,7 @@ class Predictor(BasePredictor):
             description="Height of output image",
             default=1024
         ),
-        prompt_strength: float = Input(
+        strength: float = Input(
             description="Prompt strength (or denoising strength) when using image to image. 1.0 corresponds to full destruction of information in image.",
             ge=0,le=1,default=0.8,
         ),
@@ -128,10 +128,10 @@ class Predictor(BasePredictor):
             seed = int.from_bytes(os.urandom(2), "big")
         print(f"Using seed: {seed}")
 
-        max_sequence_length=256
-        guidance_scale=0.0
-
-        flux_kwargs = {"width": width, "height": height}
+        max_sequence_length = 256
+        guidance_scale = 0.0
+        flux_kwargs = {}
+        
         print(f"Prompt: {prompt}")
         device = self.txt2img_pipe.device
 
@@ -159,12 +159,15 @@ class Predictor(BasePredictor):
             init_image = torch.nn.functional.interpolate(init_image, (height, width))
             init_image = init_image.to(torch.bfloat16)
             flux_kwargs["image"] = init_image
-            flux_kwargs["strength"] = prompt_strength
+            flux_kwargs["strength"] = strength
         else:
             print("txt2img mode")
             pipe = self.txt2img_pipe
 
         generator = torch.Generator("cuda").manual_seed(seed)
+        
+        flux_kwargs["width"] = width
+        flux_kwargs["height"] = height
 
         common_args = {
             "prompt": [prompt] * num_outputs,
